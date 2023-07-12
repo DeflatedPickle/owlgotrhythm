@@ -1,0 +1,180 @@
+//file:noinspection GroovyAssignabilityCheck
+plugins {
+	id 'java-library'
+
+	id 'org.jetbrains.kotlin.multiplatform'
+	id 'org.jetbrains.kotlin.plugin.serialization'
+
+	id 'dev.ahmedmourad.nocopy.nocopy-gradle-plugin'
+
+	id 'maven-publish'
+	// id 'dev.petuska.npm.publish'
+	id 'io.github.gradle-nexus.publish-plugin'
+
+	id 'net.kyori.blossom'
+	id 'de.undercouch.download'
+
+	id 'com.diffplug.spotless'
+
+	id 'org.jetbrains.dokka'
+}
+
+group "$group"
+archivesBaseName = "$name"
+version "$version"
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
+	testImplementation "app.cash.turbine:turbine:$turbineVersion"
+}
+
+kotlin {
+	jvm().compilations.all {
+		kotlinOptions {
+			jvmTarget = "$jvmTarget"
+		}
+	}
+	js() {
+		nodejs()
+		browser()
+	}
+	linuxX64()
+	macosX64()
+	mingwX64()
+	// wasm32()
+
+	sourceSets {
+		all {
+			languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+		}
+
+		commonMain {
+			dependencies {
+				// https://github.com/Kotlin/kotlinx.serialization
+				implementation "org.jetbrains.kotlinx:kotlinx-serialization-$serializationType:$serializationVersion"
+				implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+				// https://github.com/Kotlin/kotlinx-datetime
+				implementation "org.jetbrains.kotlinx:kotlinx-datetime:$datetimeVersion"
+				// implementation "org.jetbrains.kotlinx:atomicfu-common:$atomicfuVersion"
+
+				implementation "net.afanasev:sekret-annotation:$sekretVersion"
+
+				// implementation "com.squareup.okio:okio-multiplatform:$okioVersion"
+
+				// https://github.com/korlibs/klogger
+				implementation "com.soywiz.korlibs.klogger:klogger:$korlibVersion"
+				implementation "com.soywiz.korlibs.korau:korau:$korlibVersion"
+				implementation "com.soywiz.korlibs.korim:korim:$korlibVersion"
+				implementation "com.soywiz.korlibs.korio:korio:$korlibVersion"
+				implementation "com.soywiz.korlibs.krypto:krypto:$korlibVersion"
+				implementation "com.soywiz.korlibs.kmem:kmem:$korlibVersion"
+				implementation "com.soywiz.korlibs.kds:kds:$korlibVersion"
+				implementation "com.soywiz.korlibs.korvi:korvi:$korlibVersion"
+
+				implementation "org.kodein.di:kodein-di:$kodeinDIVersion"
+
+				// https://github.com/ionspin/kotlin-multiplatform-bignum
+				implementation "com.ionspin.kotlin:bignum:$bignumVersion"
+
+				// https://github.com/willowtreeapps/fuzzywuzzy-kotlin
+				implementation "com.willowtreeapps:fuzzywuzzy-kotlin:$fuzzyWuzzyVersion"
+
+				// https://github.com/pearxteam/kasechange
+				// implementation "net.pearx.kasechange:kasechange:$kasechangeVersion"
+
+				// https://github.com/petertrr/kotlin-multiplatform-diff
+				implementation "io.github.petertrr:kotlin-multiplatform-diff:$diffVersion"
+
+				// https://github.com/Doist/doistx-normalize
+				implementation "com.doist.x:normalize:$normalizeVersion"
+
+				// https://github.com/touchlab/Stately
+				implementation "co.touchlab:stately-common:$statelyVersion"
+				implementation "co.touchlab:stately-concurrency:$statelyVersion"
+				// implementation 'co.touchlab:stately-isolate:1.1.7'
+				// implementation 'co.touchlab:stately-iso-collections:1.1.7'
+
+				// https://github.com/sczerwinski/kotlin-util
+				// implementation "it.czerwinski:kotlin-util:$kotlinVersion"
+
+				implementation "com.michael-bull.kotlin-result:kotlin-result:$resultVersion"
+
+				implementation "com.github.cesarferreira:kotlin-pluralizer:$pluralizerVersion"
+
+				implementation "com.github.spoptchev:scientist:$scientistVersion"
+
+				// https://github.com/consoleau/kassava
+				// implementation "com.github.consoleau:kassava:v2.1.0"
+
+				// https://github.com/spoptchev/kotlin-preconditions
+				implementation "com.github.spoptchev:kotlin-preconditions:$preconditionsVersion"
+
+				implementation "me.sargunvohra.lib:ktunits:$ktunitsVersion"
+
+				implementation "com.github.holgerbrandl:jsonbuilder:$jsonBuilderVersion"
+			}
+		}
+
+		jvmMain {
+			dependsOn(commonMain)
+
+			dependencies {
+			}
+		}
+	}
+
+	targets.all {
+		compilations.all {
+			kotlinOptions {
+			}
+		}
+	}
+}
+
+wrapper {
+	gradleVersion = "$gradleVersion"
+	distributionType = "ALL"
+}
+
+nexusPublishing {
+	repositories {
+		sonatype()
+	}
+}
+
+blossom {
+	replaceToken('$[name]', name)
+	replaceToken('$[author]', author)
+	replaceToken('$[version]', version)
+}
+
+spotless {
+	ratchetFrom "origin/$branch"
+
+	groovyGradle {
+		target '*.gradle'
+		greclipse()
+	}
+
+	kotlin {
+		ktlint("$ktlintVersion")
+
+		licenseHeader "$licenseHeader\n\n"
+	}
+
+	format 'misc', {
+		target '*.md', '.gitignore'
+
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+}

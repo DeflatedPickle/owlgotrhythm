@@ -1,0 +1,10 @@
+daysUntilStale: 60
+daysUntilClose: 7
+exemptLabels:
+  - "good first issue"
+  - "question"
+  - "pinned"
+  - "bug"
+exemptProjects: true
+exemptMilestone: true
+staleLabel: "stale"

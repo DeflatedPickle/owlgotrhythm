@@ -1,0 +1,23 @@
+pluginManagement {
+	plugins {
+		id 'org.jetbrains.kotlin.multiplatform' version kotlinVersion
+		id 'org.jetbrains.kotlin.plugin.serialization' version kotlinVersion
+
+		id 'dev.ahmedmourad.nocopy.nocopy-gradle-plugin' version noCopyVersion
+
+		// id 'dev.petuska.npm.publish' version npmPublishVersion
+		id 'io.github.gradle-nexus.publish-plugin' version publishPluginVersion
+
+		id 'net.kyori.blossom' version blossomVersion
+		id 'de.undercouch.download' version downloadVersion
+
+		id 'com.diffplug.spotless' version spotlessVersion
+
+		id 'org.jetbrains.dokka' version dokkaVersion
+	}
+}
+
+rootProject.name = name
+
+include 'master'
+include 'test'
